@@ -9,8 +9,8 @@
     "customer": "npm run dev:customer --prefix client",
     "partner": "npm run dev:partner --prefix client",
     "seed": "npm run seed --prefix server",
-    "build": "npm run build --prefix client",
-    "build:prod": "npm install --prefix client && npm run build --prefix client && npm install --prefix server"
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "build:prod": "npm install --prefix server && npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [
     "hyperlocal",
