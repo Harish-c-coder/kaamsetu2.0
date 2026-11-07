@@ -33,6 +33,26 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'bn', label: 'Bengali', native: 'বাংলা', short: 'বাংলা' },
 ];
 
+// Pre-computed Bidirectional Reverse Dictionary Map for Infinite Multi-Language Switching
+const REVERSE_DICT = new Map();
+for (const [enKey, translations] of Object.entries(DICTIONARY)) {
+  const normEn = enKey.trim().toLowerCase();
+  REVERSE_DICT.set(normEn, enKey.trim());
+  if (translations && typeof translations === 'object') {
+    for (const translatedText of Object.values(translations)) {
+      if (typeof translatedText === 'string') {
+        REVERSE_DICT.set(translatedText.trim().toLowerCase(), enKey.trim());
+      }
+    }
+  }
+}
+
+export function resolveEnglishKey(rawText) {
+  if (!rawText) return '';
+  const clean = rawText.trim().toLowerCase();
+  return REVERSE_DICT.get(clean) || rawText.trim();
+}
+
 class FullPageTranslator {
   constructor() {
     this.currentLang = (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('hlc_session_lang') : null) || 'en';
@@ -202,24 +222,27 @@ class FullPageTranslator {
 
     let currentNode;
     while ((currentNode = walker.nextNode())) {
-      // Cache original English text
-      if (!this.originalTextMap.has(currentNode)) {
-        this.originalTextMap.set(currentNode, currentNode.nodeValue);
-      }
+      const currentVal = currentNode.nodeValue;
+      if (!currentVal || !currentVal.trim()) continue;
 
-      const original = this.originalTextMap.get(currentNode);
-      if (!original) continue;
+      const leading = currentVal.match(/^\s*/)[0];
+      const trailing = currentVal.match(/\s*$/)[0];
+      const trimmed = currentVal.trim();
+
+      // Resolve the original English canonical key (even if currently in Telugu, Hindi, etc.)
+      const enKey = resolveEnglishKey(trimmed);
 
       if (targetLang === 'en') {
-        currentNode.nodeValue = original;
+        if (enKey && trimmed !== enKey) {
+          currentNode.nodeValue = leading + enKey + trailing;
+        }
       } else {
-        const trimmed = original.trim();
-        // Check dictionary
-        const dictEntry = DICTIONARY[trimmed];
+        const dictEntry = DICTIONARY[enKey];
         if (dictEntry && dictEntry[targetLang]) {
-          const leading = original.match(/^\s*/)[0];
-          const trailing = original.match(/\s*$/)[0];
-          currentNode.nodeValue = leading + dictEntry[targetLang] + trailing;
+          const targetTranslation = dictEntry[targetLang];
+          if (trimmed !== targetTranslation) {
+            currentNode.nodeValue = leading + targetTranslation + trailing;
+          }
         }
       }
     }
@@ -228,14 +251,13 @@ class FullPageTranslator {
     const inputs = root.querySelectorAll('input[placeholder], textarea[placeholder], [title], [aria-label]');
     inputs.forEach((el) => {
       // Placeholder
-      if (el.placeholder) {
-        if (!el.dataset.origPlaceholder) {
-          el.dataset.origPlaceholder = el.placeholder;
-        }
+      if (el.placeholder && el.placeholder.trim()) {
+        const trimmed = el.placeholder.trim();
+        const enKey = resolveEnglishKey(trimmed);
         if (targetLang === 'en') {
-          el.placeholder = el.dataset.origPlaceholder;
+          if (enKey) el.placeholder = enKey;
         } else {
-          const dict = DICTIONARY[el.dataset.origPlaceholder.trim()];
+          const dict = DICTIONARY[enKey];
           if (dict && dict[targetLang]) {
             el.placeholder = dict[targetLang];
           }
@@ -243,14 +265,13 @@ class FullPageTranslator {
       }
 
       // Title
-      if (el.title) {
-        if (!el.dataset.origTitle) {
-          el.dataset.origTitle = el.title;
-        }
+      if (el.title && el.title.trim()) {
+        const trimmed = el.title.trim();
+        const enKey = resolveEnglishKey(trimmed);
         if (targetLang === 'en') {
-          el.title = el.dataset.origTitle;
+          if (enKey) el.title = enKey;
         } else {
-          const dict = DICTIONARY[el.dataset.origTitle.trim()];
+          const dict = DICTIONARY[enKey];
           if (dict && dict[targetLang]) {
             el.title = dict[targetLang];
           }

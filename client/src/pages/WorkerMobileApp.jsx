@@ -34,15 +34,20 @@ import {
   Briefcase,
   KeyRound,
   Check,
+  Globe,
+  ChevronDown,
 } from 'lucide-react';
 import VoiceInput from '../components/VoiceInput';
 import ShiftSelectorModal from '../components/ShiftSelectorModal';
 import PhoneCountryInput from '../components/PhoneCountryInput';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
+import { SUPPORTED_LANGUAGES } from '../utils/fullPageTranslator';
 
 export default function WorkerMobileApp() {
   const {
     t,
+    language,
+    setLanguage,
     workerUser,
     loginWorkerUser,
     logoutWorkerUser,
@@ -52,6 +57,7 @@ export default function WorkerMobileApp() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'catalog', 'enquiries', 'profile'
   const [frameMode, setFrameMode] = useState(true); // true = smartphone bezel frame, false = full viewport
   const [dashboardData, setDashboardData] = useState(null);
@@ -327,7 +333,58 @@ export default function WorkerMobileApp() {
           {!workerUser ? (
             /* Unauthenticated State: In-App Partner Login */
             <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col justify-between">
-              <div className="space-y-4 pt-2">
+              <div className="space-y-4 pt-1">
+                {/* Top Bar with Language Selector on Right */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-[11px] text-[#8E9EA2] font-semibold">
+                    <Briefcase className="w-3.5 h-3.5 text-[#F59E0B]" />
+                    <span>KaamSetu Partner</span>
+                  </div>
+
+                  {/* Language Selector Dropdown on Top Right */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setLangMenuOpen(!langMenuOpen)}
+                      className="h-7.5 px-2.5 rounded-full bg-white/[0.06] hover:bg-white/10 border border-white/15 text-[11px] font-semibold text-[#E4ECEC] flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                      title="Select Language"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-[#F59E0B]" />
+                      <span>{SUPPORTED_LANGUAGES.find((l) => l.code === language)?.short || 'EN'}</span>
+                      <ChevronDown className="w-3 h-3 opacity-60" />
+                    </button>
+
+                    {langMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[1px]"
+                          onClick={() => setLangMenuOpen(false)}
+                        />
+                        <div className="absolute right-0 mt-1 w-36 max-h-56 overflow-y-auto bg-[#13191C] border border-white/15 rounded-xl shadow-2xl p-1 z-50 animate-in zoom-in-95">
+                          {SUPPORTED_LANGUAGES.map((langItem) => (
+                            <button
+                              key={langItem.code}
+                              type="button"
+                              onClick={() => {
+                                setLanguage(langItem.code);
+                                setLangMenuOpen(false);
+                              }}
+                              className={`w-full px-2.5 py-1.5 text-left rounded-lg text-[11px] font-semibold flex items-center justify-between cursor-pointer transition-colors ${
+                                language === langItem.code
+                                  ? 'bg-amber-500/20 text-[#F59E0B]'
+                                  : 'text-[#8E9EA2] hover:bg-white/[0.06] hover:text-white'
+                              }`}
+                            >
+                              <span>{langItem.native}</span>
+                              {language === langItem.code && <span className="text-[#F59E0B]">✓</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
                 <div className="text-center space-y-1">
                   <div className="w-12 h-12 rounded-2xl bg-white/[0.04] text-[#F59E0B] border border-white/[0.08] flex items-center justify-center mx-auto mb-2">
                     <Briefcase className="w-6 h-6" />
@@ -447,35 +504,81 @@ export default function WorkerMobileApp() {
             /* Authenticated Worker Portal */
             <>
               {/* App Header */}
-              <div className="bg-[#13191C] px-4 py-3 border-b border-white/[0.08] flex items-center justify-between shrink-0 shadow-sm">
-                <div className="flex items-center gap-2.5">
+              <div className="bg-[#13191C] px-3.5 py-3 border-b border-white/[0.08] flex items-center justify-between shrink-0 shadow-sm">
+                <div className="flex items-center gap-2 min-w-0 pr-1">
                   <img
                     src={worker?.profileImage || defaultAvatar}
                     alt="Worker"
-                    className="w-9 h-9 rounded-xl object-cover border border-[#F59E0B]/40"
+                    className="w-9 h-9 rounded-xl object-cover border border-[#F59E0B]/40 shrink-0"
                   />
-                  <div>
-                    <h3 className="font-extrabold text-xs text-[#E4ECEC] truncate max-w-[130px]">
+                  <div className="min-w-0">
+                    <h3 className="font-extrabold text-xs text-[#E4ECEC] truncate">
                       {worker?.name}
                     </h3>
-                    <span className="text-[10px] font-semibold text-[#F59E0B] block">
+                    <span className="text-[10px] font-semibold text-[#F59E0B] block truncate">
                       {worker?.category}
                     </span>
                   </div>
                 </div>
 
-                {/* Shift Availability Switch Button */}
-                <button
-                  onClick={handleToggle}
-                  className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold transition-all cursor-pointer flex items-center gap-1.5 border ${
-                    isAvailable
-                      ? 'bg-emerald-500/20 text-[#34D399] border-emerald-500/30 animate-pulse'
-                      : 'bg-white/[0.06] text-[#8E9EA2] border-white/10'
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-[#34D399]' : 'bg-[#64748B]'}`} />
-                  <span>{isAvailable ? 'AVAILABLE' : 'OFF DUTY'}</span>
-                </button>
+                {/* Right Top Header Actions: Language Icon & Availability Switch */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {/* Language Selector Dropdown */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setLangMenuOpen(!langMenuOpen)}
+                      className="h-7.5 px-2 rounded-xl bg-white/[0.06] hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-[#E4ECEC] flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+                      title="Select Language"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-[#F59E0B]" />
+                      <span>{SUPPORTED_LANGUAGES.find((l) => l.code === language)?.short || 'EN'}</span>
+                      <ChevronDown className="w-2.5 h-2.5 opacity-60" />
+                    </button>
+
+                    {langMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[1px]"
+                          onClick={() => setLangMenuOpen(false)}
+                        />
+                        <div className="absolute right-0 mt-1 w-36 max-h-56 overflow-y-auto bg-[#13191C] border border-white/15 rounded-xl shadow-2xl p-1 z-50 animate-in zoom-in-95">
+                          {SUPPORTED_LANGUAGES.map((langItem) => (
+                            <button
+                              key={langItem.code}
+                              type="button"
+                              onClick={() => {
+                                setLanguage(langItem.code);
+                                setLangMenuOpen(false);
+                              }}
+                              className={`w-full px-2.5 py-1.5 text-left rounded-lg text-[11px] font-semibold flex items-center justify-between cursor-pointer transition-colors ${
+                                language === langItem.code
+                                  ? 'bg-amber-500/20 text-[#F59E0B]'
+                                  : 'text-[#8E9EA2] hover:bg-white/[0.06] hover:text-white'
+                              }`}
+                            >
+                              <span>{langItem.native}</span>
+                              {language === langItem.code && <span className="text-[#F59E0B]">✓</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Shift Availability Switch Button */}
+                  <button
+                    onClick={handleToggle}
+                    className={`px-2.5 py-1.5 rounded-xl text-[10px] font-extrabold transition-all cursor-pointer flex items-center gap-1 border ${
+                      isAvailable
+                        ? 'bg-emerald-500/20 text-[#34D399] border-emerald-500/30 animate-pulse'
+                        : 'bg-white/[0.06] text-[#8E9EA2] border-white/10'
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-[#34D399]' : 'bg-[#64748B]'}`} />
+                    <span>{isAvailable ? 'AVAILABLE' : 'OFF DUTY'}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Scrollable Mobile Body */}
