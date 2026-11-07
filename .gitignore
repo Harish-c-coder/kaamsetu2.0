@@ -6,6 +6,7 @@ server/node_modules/
 # Production build artifacts
 dist/
 client/dist/
+*.zip
 
 # Environment files
 .env
