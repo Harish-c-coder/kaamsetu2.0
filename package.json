@@ -1,0 +1,29 @@
+{
+  "name": "hyperlocal-connect",
+  "version": "1.0.0",
+  "description": "HyperLocal-Connect — Zero-Commission Local Marketplace connecting workers, artisans, street vendors and customers in India",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CUSTOMER,PARTNER\" -c \"blue,green,magenta\" \"npm run dev --prefix server\" \"npm run dev:customer --prefix client\" \"npm run dev:partner --prefix client\"",
+    "start": "node server/index.js",
+    "server": "npm run dev --prefix server",
+    "customer": "npm run dev:customer --prefix client",
+    "partner": "npm run dev:partner --prefix client",
+    "seed": "npm run seed --prefix server",
+    "build": "npm run build --prefix client",
+    "build:prod": "npm install --prefix client && npm run build --prefix client && npm install --prefix server"
+  },
+  "keywords": [
+    "hyperlocal",
+    "marketplace",
+    "zero-commission",
+    "india",
+    "workers",
+    "artisans",
+    "hyderabad"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #0C1012;
+    color: #E4ECEC;
+    margin: 0;
+    padding: 0;
+    color-scheme: dark;
+  }
+
+  /* Prevent Chrome, Edge, Safari from forcing blinding white background on inputs and autofill */
+  input, select, textarea {
+    color-scheme: dark !important;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+  select,
+  textarea {
+    background-color: #0F172A;
+    color: #E4ECEC;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #0F172A inset !important;
+    -webkit-text-fill-color: #E4ECEC !important;
+    caret-color: #E4ECEC !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.03em;
+  }
+}
+
+:root {
+  /* Backgrounds */
+  --bg-main: #0C1012;               /* Main app background (Obsidian Charcoal) */
+  --bg-surface: #13191C;            /* Card & panel surface */
+  --bg-surface-elevated: #182024;   /* Hovered card & dropdown surface */
+  --bg-modal: #182124;              /* Modal background */
+  --bg-input: #0F172A;              /* Input field background (Slate 900) */
+
+  /* Typography */
+  --text-main: #E4ECEC;             /* Headings & primary text (Silver White) */
+  --text-muted: #8E9EA2;            /* Subtitles & description (Cool Gray) */
+  --text-dark: #0B0F10;             /* Text inside light buttons */
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.08);   /* Hairline card border */
+  --border-highlight: rgba(255, 255, 255, 0.16);/* Active/Hover border */
+  --border-input: #334155;                      /* Input borders (Slate 700) */
+
+  /* Primary Button & Active Pills */
+  --btn-primary-bg: #E2E8F0;        /* Light Slate Gray button */
+  --btn-primary-hover: #FFFFFF;     /* Hover white */
+  --btn-primary-text: #0B0F10;      /* Dark text */
+
+  /* Accent & Status Colors */
+  --accent-amber: #F59E0B;          /* Amber Gold (GPS Pin, Badges, 5% fee) */
+  --status-available: #34D399;      /* Emerald Green (Available / On-Duty) */
+  --status-busy: #64748B;           /* Slate Gray (Unavailable / Off-Duty) */
+
+  --accent-gray-light: #E2E8F0;
+  --accent-gray-mid: #94A3B8;
+  --accent-gray-dark: #334155;
+}
+
+/* Custom moody dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0C1012;
+}
+::-webkit-scrollbar-thumb {
+  background: #243036;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Architectural light beam effect inspired by reference image */
+.bg-light-beam {
+  background: radial-gradient(
+    ellipse 85% 65% at 65% -10%,
+    rgba(224, 236, 235, 0.18) 0%,
+    rgba(140, 168, 172, 0.08) 35%,
+    rgba(12, 16, 18, 0) 75%
+  );
+}
+
+.diagonal-beam {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 40%,
+    rgba(0, 0, 0, 0) 80%
+  );
+}
+
+/* Frosted glass capsules & cards */
+.glass-panel {
+  background: rgba(19, 25, 28, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(24, 32, 36, 0.85);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+  transform: translateY(-2px);
+}
+
+.pill-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #E4ECEC;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+.pill-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #FFFFFF;
+}
+
+/* Voice recording pulse animation */
+@keyframes voicePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    transform: scale(1);
+  }
+}
+
+.animate-voice-pulse {
+  animation: voicePulse 1.5s infinite;
+}
+
+/* Windows Start Menu / App Launcher slide-in from left animation */
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
